@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  api:
+    build: ./api
+    image: api
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    networks:
+      - retcalc
+
+  app:
+    build: ./app
+    image: app
+    container_name: app
+    restart: unless-stopped
+    ports:
+      - 80:80
+    networks:
+      - retcalc
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: calc
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_PASSWORD: ''
+      MYSQL_USER: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    ports:
+      - 33060:3306
+    networks:
+      - retcalc
+
+networks:
+  retcalc:
+    driver: bridge
